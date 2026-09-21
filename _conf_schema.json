@@ -9,13 +9,14 @@
     "description": "注入给子代理的内置工具名",
     "type": "list",
     "default": ["send_message_to_user"],
-    "hint": "填写内置工具名。常用：send_message_to_user（支持文本/图片/语音/文件与 mention_user 提及）、get_group_message_history（需开启群历史）。名称写错会记录警告并跳过。"
+    "hint": "默认注入给子代理的内置工具。常用：send_message_to_user（支持文本/图片/语音/文件与 mention_user 提及）、get_group_message_history（需开启群历史）。在下方映射里单独配置过的子代理不受此项影响；清空表示默认不注入。名称写错会记录警告并跳过。"
   },
-  "subagent_tool_only": {
-    "description": "仅对指定子代理生效",
-    "type": "list",
-    "default": [],
-    "hint": "填写子代理名称（配置里的 Agent 名称，不要加 transfer_to_ 前缀）。留空表示对所有子代理生效。"
+  "subagent_tool_map": {
+    "description": "按子代理单独配置内置工具",
+    "type": "dict",
+    "items": {},
+    "default": {},
+    "hint": "键为子代理名称（Agent 名称，不要加 transfer_to_ 前缀），值为该子代理要注入的内置工具名（列表或逗号分隔字符串）。命中映射的子代理只按这里的配置注入，不再叠加默认列表；值留空或填 none 表示该子代理不注入任何内置工具。例如 {\"search_agent\": [\"send_message_to_user\"], \"weather\": [\"send_message_to_user\", \"get_group_message_history\"], \"chat\": []}"
   },
   "enable_display_name_fix": {
     "description": "规范化插件显示名",

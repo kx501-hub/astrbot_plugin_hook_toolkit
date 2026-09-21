@@ -14,8 +14,6 @@ from astrbot.core.astr_agent_tool_exec import FunctionToolExecutor
 from .core.display_name import apply_display_names
 from .core.handoff_tools import inject_subagent_tools
 
-DEFAULT_SUBAGENT_TOOLS = ["send_message_to_user"]
-
 
 class HookToolkitPlugin(Star):
     """Patch AstrBot through hooks: subagent tools and plugin display names."""
@@ -53,9 +51,6 @@ class HookToolkitPlugin(Star):
         if not toolset:
             return
 
-        tool_names = self._string_list("subagent_tool_names") or DEFAULT_SUBAGENT_TOOLS
-        only_subagents = self._string_list("subagent_tool_only")
-
         handoffs = [
             tool
             for tool in (getattr(toolset, "tools", None) or [])
@@ -76,14 +71,15 @@ class HookToolkitPlugin(Star):
         injected = inject_subagent_tools(
             tool_mgr=self.context.get_llm_tool_manager(),
             toolset=toolset,
-            tool_names=tool_names,
-            only_subagents=only_subagents,
+            default_tool_names=self.config.get("subagent_tool_names"),
+            tool_map=self.config.get("subagent_tool_map"),
             extra_tools=extra_tools,
         )
         if injected:
-            logger.debug(
-                f"Injected builtin tools {tool_names} into subagents {injected}."
+            summary = "; ".join(
+                f"{agent} <- {', '.join(names)}" for agent, names in injected.items()
             )
+            logger.debug(f"Injected builtin tools into subagents: {summary}")
 
     def _runtime_computer_tools(self, event: AstrMessageEvent) -> list[Any]:
         """Resolve runtime computer-use tools that a subagent would inherit.

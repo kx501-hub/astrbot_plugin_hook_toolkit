@@ -1,6 +1,6 @@
 name: astrbot_plugin_hook_toolkit
 display_name: Hook Toolkit
-version: "0.1.0"
+version: "0.1.1"
 author: "Kx501"
 desc: Hook 补丁工具集。
 repo: "https://github.com/kx501-hub/astrbot_plugin_hook_toolkit"
