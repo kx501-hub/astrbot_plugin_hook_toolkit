@@ -9,6 +9,6 @@ on:
 
 jobs:
   publish:
-    uses: Kx501/astrbot-hubs/.github/workflows/publish-plugin.yml@main
+    uses: kx501-hub/astrbot-hubs/.github/workflows/publish-plugin.yml@main
     secrets:
       HUB_PUSH_TOKEN: ${{ secrets.HUB_PUSH_TOKEN }}
