@@ -71,7 +71,6 @@ class HookToolkitPlugin(Star):
         injected = inject_subagent_tools(
             tool_mgr=self.context.get_llm_tool_manager(),
             toolset=toolset,
-            default_tool_names=self.config.get("subagent_tool_names"),
             tool_map=self.config.get("subagent_tool_map"),
             extra_tools=extra_tools,
         )

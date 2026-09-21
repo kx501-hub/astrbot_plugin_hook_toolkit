@@ -101,7 +101,6 @@ def inject_subagent_tools(
     *,
     tool_mgr: Any,
     toolset: Any,
-    default_tool_names: Any = None,
     tool_map: Any = None,
     extra_tools: list[Any] | None = None,
 ) -> dict[str, list[str]]:
@@ -109,16 +108,13 @@ def inject_subagent_tools(
 
     Subagent toolsets are rebuilt from ``HandoffTool.agent.tools`` on every
     delegation, so patching that field here affects the next delegation and is
-    idempotent across requests. Each subagent can get its own tool list: entries
-    present in ``tool_map`` use that list only, every other subagent falls back
-    to ``default_tool_names``.
+    idempotent across requests. Every subagent gets exactly the builtin tools
+    listed for it in ``tool_map``; subagents missing from the mapping get none.
 
     Args:
         tool_mgr: LLM tool manager used to resolve builtin tools and the general toolset.
         toolset: ToolSet of the main agent request (``req.func_tool``).
-        default_tool_names: Builtin tool names for subagents without an entry in
-            ``tool_map``, e.g. ``["send_message_to_user"]``.
-        tool_map: Mapping of subagent name to its own builtin tool names.
+        tool_map: Mapping of subagent name to its builtin tool names.
         extra_tools: Tools added alongside the general toolset when a subagent
             previously inherited "all tools" (``agent.tools is None``), e.g. the
             runtime computer-use tools.
@@ -126,9 +122,8 @@ def inject_subagent_tools(
     Returns:
         Mapping of subagent name to the builtin tool names actually added.
     """
-    defaults = parse_tool_names(default_tool_names)
-    overrides = parse_tool_map(tool_map)
-    if not defaults and not overrides:
+    mapping = parse_tool_map(tool_map)
+    if not mapping:
         return {}
 
     resolved_cache: dict[str, Any] = {}
@@ -149,7 +144,7 @@ def inject_subagent_tools(
             continue
 
         agent = tool.agent
-        names = overrides.get(agent.name, defaults)
+        names = mapping.get(agent.name) or []
         if not names:
             continue
 

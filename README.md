@@ -30,10 +30,9 @@ AstrBot 里 `send_message_to_user`、`get_group_message_history` 等属于 **bui
 配置项：
 
 - `enable_subagent_tools`：功能开关
-- `subagent_tool_names`：默认注入的内置工具名，默认 `["send_message_to_user"]`
-- `subagent_tool_map`：按子代理单独配置，键为子代理名（Agent 名称，不带 `transfer_to_` 前缀），值为工具名列表或逗号分隔字符串，例如 `{"search_agent": ["send_message_to_user"], "weather": ["send_message_to_user", "get_group_message_history"], "chat": []}`
+- `subagent_tool_map`：键为子代理名（Agent 名称，不带 `transfer_to_` 前缀），值为该子代理要注入的内置工具名（列表或逗号分隔字符串），例如 `{"search_agent": ["send_message_to_user"], "weather": ["send_message_to_user", "get_group_message_history"], "chat": []}`
 
-映射优先级：命中的子代理**只**用映射里的列表（不再叠加默认列表），`[]` / `none` 表示该子代理不注入任何内置工具；未命中的子代理使用 `subagent_tool_names`。
+每个子代理只拿到映射中为它列出的内置工具；**未列出的子代理不注入任何内置工具**，值写成 `[]` / `none` / `off` 同样表示不注入。
 
 ## 功能二：规范化插件显示名
 
