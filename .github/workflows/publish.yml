@@ -1,0 +1,14 @@
+name: Publish to Plugin Hub
+
+on:
+  push:
+    # tags: ["v*"]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    uses: Kx501/astrbot-hubs/.github/workflows/publish-plugin.yml@main
+    secrets:
+      HUB_PUSH_TOKEN: ${{ secrets.HUB_PUSH_TOKEN }}
