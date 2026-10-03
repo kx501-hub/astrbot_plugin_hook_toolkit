@@ -1,4 +1,4 @@
-"""Hook Toolkit plugin entry point."""
+"""Hook Toolkit 入口，提供插件代理、子代理工具注入和插件显示名处理。"""
 
 from __future__ import annotations
 
@@ -13,24 +13,33 @@ from astrbot.core.astr_agent_tool_exec import FunctionToolExecutor
 
 from .core.display_name import apply_display_names
 from .core.handoff_tools import inject_subagent_tools
+from .core.network_proxy import PluginProxyManager
 
 
 class HookToolkitPlugin(Star):
-    """Patch AstrBot through hooks: subagent tools and plugin display names."""
+    """通过运行时补丁配置插件代理、子代理工具与插件显示名。"""
 
     def __init__(self, context: Context, config: AstrBotConfig) -> None:
         super().__init__(context)
         self.context = context
         self.config: AstrBotConfig = config
+        self._proxy_manager = PluginProxyManager()
 
     async def initialize(self) -> None:
-        """Normalize plugin display names as soon as this plugin is loaded."""
+        """加载时规范化插件显示名并安装网络代理补丁。"""
         self._fix_display_names("initialize")
+        if self._feature_enabled("enable_plugin_proxy"):
+            self._proxy_manager.install(self.config.get("plugin_proxy_rules", []))
+
+    async def terminate(self) -> None:
+        """卸载网络代理补丁并释放附加连接池。"""
+        await self._proxy_manager.uninstall()
 
     @filter.on_astrbot_loaded()
     async def on_astrbot_loaded(self) -> None:
         """Normalize again after every plugin finished loading."""
         self._fix_display_names("on_astrbot_loaded")
+        self._proxy_manager.report_unmatched()
 
     @filter.on_llm_request()
     async def inject_subagent_builtin_tools(

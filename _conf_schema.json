@@ -1,4 +1,48 @@
 {
+  "enable_plugin_proxy": {
+    "description": "启用按插件网络代理",
+    "type": "bool",
+    "default": true,
+    "hint": "按插件代理规则处理网络请求；规则列表为空时不启用网络补丁。修改后重载 Hook Toolkit。"
+  },
+  "plugin_proxy_rules": {
+    "description": "插件代理规则",
+    "type": "template_list",
+    "default": [],
+    "templates": {
+      "plugin_proxy": {
+        "name": "插件网络代理",
+        "display_item": "plugin",
+        "items": {
+          "enabled": {
+            "description": "启用这条规则",
+            "type": "bool",
+            "default": true
+          },
+          "plugin": {
+            "description": "插件名称",
+            "type": "string",
+            "default": "",
+            "hint": "填写 metadata.yaml 的 name 或插件目录名，例如 astrbot_plugin_media_parser；不要填写显示名。重复插件以最后一条启用规则为准。"
+          },
+          "proxy": {
+            "description": "代理地址",
+            "type": "string",
+            "default": "",
+            "hint": "填写 HTTP/HTTPS 代理地址，例如 http://127.0.0.1:7890。允许 URL 用户名密码；暂不支持 SOCKS。规则匹配后会覆盖请求原有的代理设置。"
+          },
+          "client": {
+            "description": "网络客户端",
+            "type": "string",
+            "default": "auto",
+            "options": ["auto", "aiohttp", "httpx", "requests"],
+            "labels": ["自动", "aiohttp", "httpx", "requests"],
+            "hint": "自动会在实际请求时识别这三种客户端；手动选择只处理指定客户端。识别到的客户端会记录日志。"
+          }
+        }
+      }
+    }
+  },
   "enable_subagent_tools": {
     "description": "让子代理继承内置工具",
     "type": "bool",
