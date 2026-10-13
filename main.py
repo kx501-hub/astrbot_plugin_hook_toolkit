@@ -35,9 +35,18 @@ class HookToolkitPlugin(Star):
         """卸载网络代理补丁并释放附加连接池。"""
         await self._proxy_manager.uninstall()
 
+    @filter.on_plugin_loaded()
+    async def on_plugin_loaded(self, metadata: Any) -> None:
+        """在插件加载或重载完成后规范化显示名。
+
+        Args:
+            metadata: 本次加载完成的插件元数据。
+        """
+        self._fix_display_names("on_plugin_loaded")
+
     @filter.on_astrbot_loaded()
     async def on_astrbot_loaded(self) -> None:
-        """Normalize again after every plugin finished loading."""
+        """启动完成后统一规范化插件显示名。"""
         self._fix_display_names("on_astrbot_loaded")
         self._proxy_manager.report_unmatched()
 

@@ -5,7 +5,7 @@
 | 功能 | 解决的问题 | 实现方式 |
 |---|---|---|
 | 子代理内置工具注入 | 子代理默认拿不到 `send_message_to_user` 等**内置工具**（内置工具只由主 Agent 显式注入），因此子代理无法主动发消息、`@` 群成员 | `@filter.on_llm_request()` 里幂等 patch `HandoffTool.agent.tools` |
-| 插件显示名规范化 | 部分插件 `metadata.yaml` 没写 `display_name`，WebUI 里只能看到 `astrbot_plugin_xxx` | 启动时改写内存中的 `StarMetadata.display_name`，**不改动插件文件** |
+| 插件显示名规范化 | 部分插件 `metadata.yaml` 没写 `display_name`，WebUI 里只能看到 `astrbot_plugin_xxx` | 启动及插件加载、重载后改写内存中的 `StarMetadata.display_name`，**不改动插件文件** |
 | 按插件网络代理 | 目标插件未提供代理配置，需要指定代理出口 | 根据请求调用来源，为 aiohttp、httpx、requests 应用代理规则 |
 
 ## 安装
@@ -60,7 +60,7 @@ AstrBot 里 `send_message_to_user`、`get_group_message_history` 等属于 **bui
 - `display_name_uppercase_words`：保留全大写的单词表
 - `display_name_include_reserved`：是否连 AstrBot 内置插件一起处理（默认否）
 
-**只在运行期生效**，不修改任何插件的 `metadata.yaml`，插件更新/重装都不会冲突；代价是每次启动由本插件重新设置一次（`initialize()` + `on_astrbot_loaded()` 各跑一次，覆盖插件加载顺序问题）。
+**只在运行期生效**，不修改任何插件的 `metadata.yaml`。启动时统一设置显示名，之后每个插件加载或重载完成都会自动重新应用命名规则，无需再手动重载 Hook Toolkit。
 
 ## 功能三：按插件网络代理
 

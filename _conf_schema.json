@@ -54,7 +54,7 @@
     "type": "dict",
     "items": {},
     "default": {},
-    "hint": "键为子代理名称，值为该子代理要注入的内置工具名（半角逗号分隔字符串）。常用：send_message_to_user、get_group_message_history。名称写错会记录警告并跳过。例如 {\"search_agent\": \"send_message_to_user\", \"weather\": \"send_message_to_user, get_group_message_history\"}"
+    "hint": "键为子代理名称，值为该子代理要注入的内置工具名（半角逗号分隔字符串）。常用：send_message_to_user，名称写错会记录警告并跳过。示例 {\"search_agent\": \"send_message_to_user\", \"weather\": \"send_message_to_user, get_group_message_history\"}"
   },
   "enable_display_name_fix": {
     "description": "规范化插件显示名",
